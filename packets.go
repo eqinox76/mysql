@@ -301,6 +301,11 @@ func (mc *mysqlConn) writeHandshakeResponsePacket(authResp []byte, plugin string
 		clientFlags |= clientMultiStatements
 	}
 
+	// To enable compression
+	if mc.cfg.Compress {
+		clientFlags |= clientCompress
+	}
+
 	// encode length of the auth plugin data
 	var authRespLEIBuf [9]byte
 	authRespLen := len(authResp)

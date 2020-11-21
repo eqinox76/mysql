@@ -136,6 +136,11 @@ func (c *connector) Connect(ctx context.Context) (driver.Conn, error) {
 		return nil, err
 	}
 
+	// #24 compression requested by client and supported by server
+	if mc.flags&clientCompress > 0 && mc.cfg.Compress {
+		mc.compressed = true
+	}
+
 	return mc, nil
 }
 

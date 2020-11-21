@@ -35,6 +35,7 @@ type mysqlConn struct {
 	sequence         uint8
 	parseTime        bool
 	reset            bool // set when the Go SQL package calls ResetSession
+	compressed       bool
 
 	// for context support (Go 1.8+)
 	watching bool
