@@ -59,6 +59,8 @@ var (
 )
 
 // See https://github.com/go-sql-driver/mysql/wiki/Testing
+// You can start a compatible throw away instance per docker:
+// docker run -it --rm -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=gotest --net host mysql --local_infile=1
 func init() {
 	// get environment variables
 	env := func(key, defaultValue string) string {
@@ -78,6 +80,8 @@ func init() {
 	if err == nil {
 		available = true
 		c.Close()
+	} else {
+		panic(err)
 	}
 }
 
