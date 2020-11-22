@@ -11,6 +11,7 @@ package mysql
 import (
 	"context"
 	"database/sql/driver"
+	"fmt"
 	"net"
 )
 
@@ -139,6 +140,26 @@ func (c *connector) Connect(ctx context.Context) (driver.Conn, error) {
 	// #24 compression requested by client and supported by server
 	if mc.flags&clientCompress > 0 && mc.cfg.Compress {
 		mc.compressed = true
+		reader, ok := mc.buf.nc.(*compressableReaderConn)
+		if !ok {
+			reader = &compressableReaderConn{Conn: mc.buf.nc}
+			mc.buf.nc = reader
+		}
+		err = reader.activateCompression()
+		if err != nil {
+			return nil, err
+		}
+
+		writer, ok := mc.netConn.(*compressableWriterConn)
+		if !ok {
+			writer = &compressableWriterConn{Conn: mc.netConn}
+			mc.netConn = writer
+		}
+		err = writer.activateCompression()
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println("activated compression", writer.compression)
 	}
 
 	return mc, nil
